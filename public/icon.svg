@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="50%" stop-color="#042f2e" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Outer Rounded Square for App Icon -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  
+  <!-- Subtle decorative circular patterns symbolizing communal round table / merry-go-round -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#059669" stroke-width="3" stroke-dasharray="8 12" opacity="0.3" />
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#10b981" stroke-width="2" opacity="0.4" />
+  
+  <!-- Central Emblem: Safe Vault & Shield of Growth -->
+  <g transform="translate(136, 126)">
+    <!-- Interlocking rings of Chama members -->
+    <circle cx="120" cy="80" r="42" fill="none" stroke="url(#emeraldGrad)" stroke-width="14" />
+    <circle cx="70" cy="165" r="42" fill="none" stroke="url(#goldGrad)" stroke-width="14" />
+    <circle cx="170" cy="165" r="42" fill="none" stroke="url(#emeraldGrad)" stroke-width="14" />
+    
+    <!-- Central Coin Shilling Node -->
+    <circle cx="120" cy="138" r="28" fill="url(#goldGrad)" filter="url(#glow)" />
+    
+    <!-- Chama C Lettermark inside coin -->
+    <path d="M128 126 C124 122 114 122 110 128 C106 134 106 142 110 148 C114 154 124 154 128 150" 
+          fill="none" stroke="#042f2e" stroke-width="5" stroke-linecap="round" />
+  </g>
+  
+  <!-- Bottom micro-kicker: Kenya Flag Accent bar -->
+  <g transform="translate(196, 420)">
+    <rect x="0" y="0" width="40" height="6" rx="3" fill="#000000" />
+    <rect x="40" y="0" width="40" height="6" rx="3" fill="#b91c1c" />
+    <rect x="80" y="0" width="40" height="6" rx="3" fill="#15803d" />
+  </g>
+</svg>
