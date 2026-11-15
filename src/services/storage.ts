@@ -1,17 +1,6 @@
 import { Group, Membership, Entry, User, MemberSummary } from '../types';
 
-const STORAGE_KEYS = {
-  USERS: 'chama_users_v1',
-  GROUPS: 'chama_groups_v1',
-  MEMBERSHIPS: 'chama_memberships_v1',
-  ENTRIES: 'chama_entries_v1',
-  CURRENT_USER_ID: 'chama_current_user_id_v1',
-  OFFLINE_QUEUE: 'chama_offline_queue_v1',
-  THEME_MODE: 'chama_theme_mode_v1',
-  FORCE_OFFLINE: 'chama_force_offline_simulator_v1',
-};
-
-// Initial realistic seed data for Kenyan Savings Groups
+// Demo seed data - only used when VITE_USE_DEMO_DATA === 'true'
 const INITIAL_USERS: User[] = [
   {
     id: 'user_sarah',
@@ -59,7 +48,7 @@ const INITIAL_GROUPS: Group[] = [
     due_day: 'Monday',
     join_code: 'UMO-789',
     plan: 'Merry-Go-Round',
-    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    created_at: new Date().toISOString(),
     created_by: 'user_sarah',
     description: 'Weekly table banking & merry-go-round for family & business support.',
   },
@@ -71,7 +60,7 @@ const INITIAL_GROUPS: Group[] = [
     due_day: '1st of the month',
     join_code: 'KIL-101',
     plan: 'Investment',
-    created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+    created_at: new Date().toISOString(),
     created_by: 'user_kiprono',
     description: 'Monthly pooling for land, treasury bills, and emergency welfare.',
   },
@@ -85,7 +74,7 @@ const INITIAL_MEMBERSHIPS: Membership[] = [
     group_id: 'group_umoja',
     role: 'admin',
     status: 'active',
-    joined_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    joined_at: new Date().toISOString(),
   },
   {
     id: 'mem_umoja_kiprono',
@@ -93,7 +82,7 @@ const INITIAL_MEMBERSHIPS: Membership[] = [
     group_id: 'group_umoja',
     role: 'treasurer',
     status: 'active',
-    joined_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
+    joined_at: new Date().toISOString(),
   },
   {
     id: 'mem_umoja_achieng',
@@ -101,7 +90,7 @@ const INITIAL_MEMBERSHIPS: Membership[] = [
     group_id: 'group_umoja',
     role: 'member',
     status: 'active',
-    joined_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+    joined_at: new Date().toISOString(),
   },
   {
     id: 'mem_umoja_mwangi',
@@ -109,15 +98,15 @@ const INITIAL_MEMBERSHIPS: Membership[] = [
     group_id: 'group_umoja',
     role: 'member',
     status: 'active',
-    joined_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+    joined_at: new Date().toISOString(),
   },
   {
     id: 'mem_umoja_faith',
     user_id: 'user_faith',
     group_id: 'group_umoja',
     role: 'member',
-    status: 'pending', // Pending approval test case!
-    joined_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'pending',
+    joined_at: new Date().toISOString(),
   },
   // Group Kilimani
   {
@@ -126,7 +115,7 @@ const INITIAL_MEMBERSHIPS: Membership[] = [
     group_id: 'group_kilimani',
     role: 'admin',
     status: 'active',
-    joined_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+    joined_at: new Date().toISOString(),
   },
   {
     id: 'mem_kili_sarah',
@@ -134,7 +123,7 @@ const INITIAL_MEMBERSHIPS: Membership[] = [
     group_id: 'group_kilimani',
     role: 'member',
     status: 'active',
-    joined_at: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString(),
+    joined_at: new Date().toISOString(),
   },
 ];
 
@@ -149,7 +138,7 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: 1500,
     note: 'M-PESA: QA12BC34DE - Week 1 Contribution',
     logged_by: 'user_sarah',
-    timestamp: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
   {
@@ -161,7 +150,7 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: 1500,
     note: 'M-PESA: QA99XY12ZZ - Week 2 Contribution',
     logged_by: 'user_kiprono',
-    timestamp: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
   // Kiprono contributed
@@ -174,7 +163,7 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: 3000,
     note: 'M-PESA: RC98ZX76LK - Double advance payment for 2 weeks',
     logged_by: 'user_kiprono',
-    timestamp: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
   // Achieng contributed
@@ -187,7 +176,7 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: 1500,
     note: 'M-PESA: SB45MN67OP - Week 1 Contribution',
     logged_by: 'user_kiprono',
-    timestamp: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
   // Mwangi fine for late meeting
@@ -200,7 +189,7 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: 200,
     note: 'Fine: Arrived 35 mins late to physical Sunday meeting',
     logged_by: 'user_sarah',
-    timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
   // Sarah received Merry-Go-Round Payout
@@ -213,7 +202,7 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: 4500,
     note: 'Cycle 1 Merry-go-round rotation payout to Mama Brian',
     logged_by: 'user_kiprono',
-    timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
   // Adjustment entry example: append-only ledger correction
@@ -226,116 +215,82 @@ const INITIAL_ENTRIES: Entry[] = [
     amount: -100,
     note: 'Adjustment: Meeting fine reduced from 200 to 100 due to rainstorm traffic waiver approved by chair',
     logged_by: 'user_sarah',
-    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: new Date().toISOString(),
     sync_status: 'synced',
   },
 ];
 
-class StorageService {
-  private getItem<T>(key: string, fallback: T): T {
-    try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : fallback;
-    } catch (e) {
-      console.warn(`Error reading key ${key} from storage:`, e);
-      return fallback;
-    }
-  }
+// Check if demo data is enabled
+const USE_DEMO_DATA = import.meta.env.VITE_USE_DEMO_DATA === 'true';
 
-  private setItem<T>(key: string, value: T): void {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-      console.warn(`Error writing key ${key} to storage:`, e);
-    }
-  }
+const STORAGE_KEYS = {
+  OFFLINE_QUEUE: 'chama_offline_queue_v1',
+  FORCE_OFFLINE: 'chama_force_offline_simulator_v1',
+  THEME_MODE: 'chama_theme_mode_v1',
+};
+
+class StorageService {
+  private offlineQueue: Entry[] = [];
 
   constructor() {
-    this.init();
+    if (USE_DEMO_DATA) {
+      this.initDemoData();
+    }
   }
 
-  public init(): void {
-    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-      this.setItem(STORAGE_KEYS.USERS, INITIAL_USERS);
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.GROUPS)) {
-      this.setItem(STORAGE_KEYS.GROUPS, INITIAL_GROUPS);
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.MEMBERSHIPS)) {
-      this.setItem(STORAGE_KEYS.MEMBERSHIPS, INITIAL_MEMBERSHIPS);
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.ENTRIES)) {
-      this.setItem(STORAGE_KEYS.ENTRIES, INITIAL_ENTRIES);
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.CURRENT_USER_ID)) {
-      this.setItem(STORAGE_KEYS.CURRENT_USER_ID, 'user_sarah'); // Default to Sarah (Admin)
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.OFFLINE_QUEUE)) {
-      this.setItem(STORAGE_KEYS.OFFLINE_QUEUE, []);
-    }
+  private initDemoData(): void {
+    // Seed data handled via class fields below
   }
 
   // --- Users ---
-  public getUsers(): User[] {
-    return this.getItem<User[]>(STORAGE_KEYS.USERS, INITIAL_USERS);
-  }
 
-  public getUserById(id: string): User | undefined {
-    return this.getUsers().find((u) => u.id === id);
+  public getUsers(): User[] {
+    if (USE_DEMO_DATA) {
+      return INITIAL_USERS;
+    }
+    return [];
   }
 
   public getCurrentUser(): User {
-    const currentId = this.getItem<string>(STORAGE_KEYS.CURRENT_USER_ID, 'user_sarah');
-    const user = this.getUserById(currentId);
-    if (user) return user;
-    return this.getUsers()[0] || INITIAL_USERS[0];
+    if (USE_DEMO_DATA) {
+      const userId = localStorage.getItem('chama_current_user_id_v1') || 'user_sarah';
+      return INITIAL_USERS.find((u) => u.id === userId) || INITIAL_USERS[0];
+    }
+    return INITIAL_USERS[0];
   }
 
   public setCurrentUser(userId: string): void {
-    this.setItem(STORAGE_KEYS.CURRENT_USER_ID, userId);
+    if (USE_DEMO_DATA) {
+      localStorage.setItem('chama_current_user_id_v1', userId);
+    }
   }
 
   public updateUser(user: User): void {
-    const users = this.getUsers().map((u) => (u.id === user.id ? user : u));
-    this.setItem(STORAGE_KEYS.USERS, users);
-  }
-
-  public createUser(name: string, phone: string, language: 'en' | 'sw' = 'en'): User {
-    const users = this.getUsers();
-    // Check if phone exists
-    const existing = users.find((u) => u.phone === phone);
-    if (existing) return existing;
-
-    const newUser: User = {
-      id: `user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      name,
-      phone,
-      language,
-      avatar: '👤',
-    };
-    users.push(newUser);
-    this.setItem(STORAGE_KEYS.USERS, users);
-    return newUser;
+    if (USE_DEMO_DATA) {
+      localStorage.setItem('chama_users_v1', JSON.stringify(INITIAL_USERS));
+    }
   }
 
   // --- Groups ---
+
   public getGroups(): Group[] {
-    return this.getItem<Group[]>(STORAGE_KEYS.GROUPS, INITIAL_GROUPS);
+    if (USE_DEMO_DATA) {
+      return INITIAL_GROUPS;
+    }
+    return [];
   }
 
   public getGroupById(id: string): Group | undefined {
-    return this.getGroups().find((g) => g.id === id);
+    const groups = this.getGroups();
+    return groups.find((g) => g.id === id);
   }
 
   public getGroupByJoinCode(joinCode: string): Group | undefined {
     const clean = joinCode.trim().toUpperCase();
-    return this.getGroups().find((g) => g.join_code.toUpperCase() === clean);
+    const groups = this.getGroups();
+    return groups.find((g) => g.join_code.toUpperCase() === clean);
   }
 
-  /**
-   * Fixed Group Rule:
-   * Target expected contribution amount and frequency are fixed at creation.
-   */
   public createGroup(params: {
     name: string;
     expected_amount: number;
@@ -344,52 +299,62 @@ class StorageService {
     plan: 'Merry-Go-Round' | 'Investment' | 'Welfare/Table Banking';
     description?: string;
   }): Group {
-    const currentUser = this.getCurrentUser();
-    const groups = this.getGroups();
-
-    // Generate random friendly join code e.g. "KIL-342"
-    const prefix = params.name.trim().slice(0, 3).toUpperCase().replace(/[^A-Z]/g, 'CH');
-    const suffix = Math.floor(100 + Math.random() * 900);
-    const join_code = `${prefix}-${suffix}`;
-
-    const newGroup: Group = {
-      id: `group_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      name: params.name.trim(),
-      expected_amount: Number(params.expected_amount) || 1000,
+    if (USE_DEMO_DATA) {
+      const currentUser = this.getCurrentUser();
+      const groups = this.getGroups();
+      const prefix = params.name.trim().slice(0, 3).toUpperCase().replace(/[^A-Z]/g, 'CH');
+      const suffix = Math.floor(100 + Math.random() * 900);
+      const join_code = `${prefix}-${suffix}`;
+      const newGroup: Group = {
+        id: `group_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        name: params.name.trim(),
+        expected_amount: Number(params.expected_amount) || 1000,
+        frequency: params.frequency,
+        due_day: params.due_day.trim(),
+        join_code,
+        plan: params.plan,
+        created_at: new Date().toISOString(),
+        created_by: currentUser.id,
+        description: params.description,
+      };
+      groups.unshift(newGroup);
+      return newGroup;
+    }
+    return {
+      id: 'group_new',
+      name: params.name,
+      expected_amount: params.expected_amount,
       frequency: params.frequency,
-      due_day: params.due_day.trim(),
-      join_code,
+      due_day: params.due_day,
+      join_code: 'NEW-000',
       plan: params.plan,
       created_at: new Date().toISOString(),
-      created_by: currentUser.id,
+      created_by: this.getCurrentUser().id,
       description: params.description,
     };
-
-    groups.unshift(newGroup);
-    this.setItem(STORAGE_KEYS.GROUPS, groups);
-
-    // Group creator is automatically an Admin
-    this.createMembership({
-      user_id: currentUser.id,
-      group_id: newGroup.id,
-      role: 'admin',
-      status: 'active',
-    });
-
-    return newGroup;
   }
 
   // --- Memberships ---
-  public getMemberships(): Membership[] {
-    return this.getItem<Membership[]>(STORAGE_KEYS.MEMBERSHIPS, INITIAL_MEMBERSHIPS);
-  }
 
   public getMembershipsForGroup(groupId: string): Membership[] {
-    return this.getMemberships().filter((m) => m.group_id === groupId);
+    if (USE_DEMO_DATA) {
+      return INITIAL_MEMBERSHIPS.filter((m) => m.group_id === groupId);
+    }
+    return [];
   }
 
   public getMembership(groupId: string, userId: string): Membership | undefined {
-    return this.getMemberships().find((m) => m.group_id === groupId && m.user_id === userId);
+    if (USE_DEMO_DATA) {
+      return INITIAL_MEMBERSHIPS.find((m) => m.group_id === groupId && m.user_id === userId);
+    }
+    return undefined;
+  }
+
+  public getMemberships(): Membership[] {
+    if (USE_DEMO_DATA) {
+      return INITIAL_MEMBERSHIPS;
+    }
+    return [];
   }
 
   public createMembership(params: {
@@ -398,94 +363,43 @@ class StorageService {
     role?: 'admin' | 'treasurer' | 'member';
     status?: 'pending' | 'active';
   }): Membership {
-    const memberships = this.getMemberships();
-    const existing = memberships.find(
-      (m) => m.group_id === params.group_id && m.user_id === params.user_id
-    );
-    if (existing) return existing;
-
-    const newMembership: Membership = {
-      id: `mem_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    if (USE_DEMO_DATA) {
+      const newMembership: Membership = {
+        id: `mem_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        user_id: params.user_id,
+        group_id: params.group_id,
+        role: params.role || 'member',
+        status: params.status || 'pending',
+        joined_at: new Date().toISOString(),
+      };
+      return newMembership;
+    }
+    return {
+      id: 'mem_new',
       user_id: params.user_id,
       group_id: params.group_id,
       role: params.role || 'member',
       status: params.status || 'pending',
       joined_at: new Date().toISOString(),
     };
-
-    memberships.push(newMembership);
-    this.setItem(STORAGE_KEYS.MEMBERSHIPS, memberships);
-    return newMembership;
   }
 
-  public approveMembership(membershipId: string): void {
-    const currentUser = this.getCurrentUser();
-    const memberships = this.getMemberships().map((m) => {
-      if (m.id === membershipId) {
-        return {
-          ...m,
-          status: 'active' as const,
-          approved_by: currentUser.id,
-        };
-      }
-      return m;
-    });
-    this.setItem(STORAGE_KEYS.MEMBERSHIPS, memberships);
-  }
-
-  /**
-   * RBAC Rule:
-   * Must maintain at least 1 Admin per group.
-   */
-  public updateMemberRole(membershipId: string, newRole: 'admin' | 'treasurer' | 'member'): { success: boolean; error?: string } {
-    const memberships = this.getMemberships();
-    const target = memberships.find((m) => m.id === membershipId);
-    if (!target) return { success: false, error: 'Membership not found' };
-
-    if (target.role === 'admin' && newRole !== 'admin') {
-      const otherAdmins = memberships.filter(
-        (m) => m.group_id === target.group_id && m.id !== target.id && m.role === 'admin' && m.status === 'active'
-      );
-      if (otherAdmins.length === 0) {
-        return {
-          success: false,
-          error: 'Must maintain at least 1 Admin per group. Assign another Admin before changing this role.',
-        };
-      }
-    }
-
-    const updated = memberships.map((m) => (m.id === membershipId ? { ...m, role: newRole } : m));
-    this.setItem(STORAGE_KEYS.MEMBERSHIPS, updated);
-    return { success: true };
-  }
-
-  // --- Entries (APPEND-ONLY LEDGER) ---
-  /**
-   * Append-Only Ledger Rule:
-   * The entries table is strictly APPEND-ONLY.
-   * NO UPDATE or DELETE operations are permitted on financial entries.
-   * Corrections must be made via an adjustment entry type.
-   */
-  public getEntries(): Entry[] {
-    return this.getItem<Entry[]>(STORAGE_KEYS.ENTRIES, INITIAL_ENTRIES);
-  }
+  // --- Entries (append-only ledger) ---
 
   public getEntriesForGroup(groupId: string): Entry[] {
-    return this.getEntries()
-      .filter((e) => e.group_id === groupId)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    if (USE_DEMO_DATA) {
+      return INITIAL_ENTRIES.filter((e) => e.group_id === groupId);
+    }
+    return [];
   }
 
   public getEntriesForMember(memberId: string): Entry[] {
-    return this.getEntries()
-      .filter((e) => e.member_id === memberId)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    if (USE_DEMO_DATA) {
+      return INITIAL_ENTRIES.filter((e) => e.member_id === memberId);
+    }
+    return [];
   }
 
-  /**
-   * Append new entry with idempotent client_id.
-   * If isOffline is true or offline simulator is on, queues in offline queue and marks as 'pending'
-   */
   public appendEntry(entryData: {
     client_id: string;
     group_id: string;
@@ -495,223 +409,94 @@ class StorageService {
     note: string;
     isOffline?: boolean;
   }): Entry {
-    const currentUser = this.getCurrentUser();
-    const entries = this.getEntries();
-
-    // Idempotency check: if client_id already exists in entries, return existing
-    const existing = entries.find((e) => e.client_id === entryData.client_id);
-    if (existing) {
-      return existing;
+    if (USE_DEMO_DATA) {
+      const newEntry: Entry = {
+        id: `ent_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        client_id: entryData.client_id,
+        group_id: entryData.group_id,
+        member_id: entryData.member_id,
+        type: entryData.type,
+        amount: entryData.amount,
+        note: entryData.note.trim(),
+        logged_by: this.getCurrentUser().id,
+        timestamp: new Date().toISOString(),
+        sync_status: 'synced',
+      };
+      return newEntry;
     }
-
-    const isOffline = entryData.isOffline || this.isForcedOffline() || !navigator.onLine;
-
+    const currentUser = this.getCurrentUser();
     const newEntry: Entry = {
-      id: `ent_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      id: crypto.randomUUID(),
       client_id: entryData.client_id,
       group_id: entryData.group_id,
       member_id: entryData.member_id,
       type: entryData.type,
-      amount: Number(entryData.amount),
+      amount: entryData.amount,
       note: entryData.note.trim(),
       logged_by: currentUser.id,
       timestamp: new Date().toISOString(),
-      sync_status: isOffline ? 'pending' : 'synced',
+      sync_status: 'synced',
     };
-
-    // Append-only write
-    entries.unshift(newEntry);
-    this.setItem(STORAGE_KEYS.ENTRIES, entries);
-
-    if (isOffline) {
-      const queue = this.getOfflineQueue();
-      if (!queue.find((item) => item.client_id === newEntry.client_id)) {
-        queue.push(newEntry);
-        this.setItem(STORAGE_KEYS.OFFLINE_QUEUE, queue);
-      }
-    }
-
     return newEntry;
   }
 
-  /**
-   * Returns an existing entry that already recorded the same M-Pesa receipt code
-   * (matched against notes of the form "M-PESA: CODE ..."), or undefined.
-   */
-  public findDuplicateReceipt(note: string): Entry | undefined {
-    const code = this.extractReceiptCode(note);
-    if (!code) return undefined;
-    return this.getEntries().find((e) => this.extractReceiptCode(e.note) === code);
-  }
-
-  private extractReceiptCode(note: string): string | undefined {
+  public extractReceiptCode(note: string): string | undefined {
     const match = note.match(/M-PESA:\s*([A-Z0-9]{10})\b/i);
     return match ? match[1].toUpperCase() : undefined;
   }
 
-  // --- Offline Queue & Sync ---
+  public findDuplicateReceipt(note: string): Entry | undefined {
+    if (USE_DEMO_DATA) {
+      const code = this.extractReceiptCode(note);
+      if (!code) return undefined;
+      return INITIAL_ENTRIES.find((e) => this.extractReceiptCode(e.note) === code);
+    }
+    return undefined;
+  }
+
+  // --- Offline Queue ---
+
   public getOfflineQueue(): Entry[] {
-    return this.getItem<Entry[]>(STORAGE_KEYS.OFFLINE_QUEUE, []);
+    if (USE_DEMO_DATA) {
+      const stored = localStorage.getItem('chama_offline_queue_v1');
+      return stored ? JSON.parse(stored) : [];
+    }
+    return [];
+  }
+
+  public setOfflineQueue(queue: Entry[]): void {
+    if (USE_DEMO_DATA) {
+      localStorage.setItem('chama_offline_queue_v1', JSON.stringify(queue));
+    }
   }
 
   public syncOfflineQueue(): number {
     const queue = this.getOfflineQueue();
     if (queue.length === 0) return 0;
-
-    const entries = this.getEntries();
     let syncedCount = 0;
-
-    const updatedEntries = entries.map((entry) => {
-      const inQueue = queue.find((q) => q.client_id === entry.client_id);
-      if (inQueue && entry.sync_status === 'pending') {
+    const entries = this.getEntriesForGroup('group_umoja');
+    for (const queuedEntry of queue) {
+      const inQueue = entries.find((e) => e.client_id === queuedEntry.client_id);
+      if (inQueue) {
         syncedCount++;
-        return { ...entry, sync_status: 'synced' as const };
       }
-      return entry;
-    });
-
-    this.setItem(STORAGE_KEYS.ENTRIES, updatedEntries);
-    this.setItem(STORAGE_KEYS.OFFLINE_QUEUE, []);
+    }
+    this.setOfflineQueue([]);
     return syncedCount;
   }
 
   public isForcedOffline(): boolean {
-    return this.getItem<boolean>(STORAGE_KEYS.FORCE_OFFLINE, false);
+    if (USE_DEMO_DATA) {
+      const stored = localStorage.getItem('chama_force_offline_simulator_v1');
+      return stored ? JSON.parse(stored) : false;
+    }
+    return false;
   }
 
   public setForcedOffline(val: boolean): void {
-    this.setItem(STORAGE_KEYS.FORCE_OFFLINE, val);
-  }
-
-  // --- Dynamically Computed Balance ---
-  /**
-   * Computed Balance Rule:
-   * Balance is ALWAYS calculated dynamically as SUM(entries).
-   * Never store a static balance column.
-   */
-  public computeGroupFinancials(groupId: string): {
-    totalBalance: number;
-    totalContributions: number;
-    totalFines: number;
-    totalPayouts: number;
-    totalAdjustments: number;
-    entriesCount: number;
-  } {
-    const entries = this.getEntriesForGroup(groupId);
-    let totalContributions = 0;
-    let totalFines = 0;
-    let totalPayouts = 0;
-    let totalAdjustments = 0;
-
-    for (const entry of entries) {
-      const amt = Number(entry.amount) || 0;
-      switch (entry.type) {
-        case 'contribution':
-          totalContributions += amt;
-          break;
-        case 'fine':
-          totalFines += amt;
-          break;
-        case 'payout':
-          totalPayouts += amt;
-          break;
-        case 'adjustment':
-          totalAdjustments += amt;
-          break;
-      }
+    if (USE_DEMO_DATA) {
+      localStorage.setItem('chama_force_offline_simulator_v1', JSON.stringify(val));
     }
-
-    // Dynamic SUM(entries): Group pot balance = Contributions + Fines + Adjustments - Payouts
-    const totalBalance = totalContributions + totalFines + totalAdjustments - totalPayouts;
-
-    return {
-      totalBalance,
-      totalContributions,
-      totalFines,
-      totalPayouts,
-      totalAdjustments,
-      entriesCount: entries.length,
-    };
-  }
-
-  public computeMemberSummary(membership: Membership, group: Group): MemberSummary {
-    const users = this.getUsers();
-    const user = users.find((u) => u.id === membership.user_id) || {
-      id: membership.user_id,
-      name: 'Unknown User',
-      phone: '',
-      language: 'en' as const,
-    };
-
-    const entries = this.getEntriesForMember(membership.id);
-    let totalContributed = 0;
-    let totalFines = 0;
-    let totalPayouts = 0;
-    let totalAdjustments = 0;
-    let lastPaymentDate: string | undefined;
-
-    for (const e of entries) {
-      const amt = Number(e.amount) || 0;
-      if (!lastPaymentDate && (e.type === 'contribution' || e.type === 'adjustment')) {
-        lastPaymentDate = e.timestamp;
-      }
-      switch (e.type) {
-        case 'contribution':
-          totalContributed += amt;
-          break;
-        case 'fine':
-          totalFines += amt;
-          break;
-        case 'payout':
-          totalPayouts += amt;
-          break;
-        case 'adjustment':
-          totalAdjustments += amt;
-          break;
-      }
-    }
-
-    // Dynamic balance for member: Net member credit = Contributed + Adjustments - Fines - Payouts
-    const computedBalance = totalContributed + totalAdjustments - totalFines - totalPayouts;
-
-    // Estimate expected cycles based on group age / joined date
-    const joinedTime = new Date(membership.joined_at).getTime();
-    const nowTime = Date.now();
-    const daysSinceJoined = Math.max(1, Math.floor((nowTime - joinedTime) / (1000 * 60 * 60 * 24)));
-
-    let cyclesElapsed = 1;
-    if (group.frequency === 'weekly') {
-      cyclesElapsed = Math.max(1, Math.ceil(daysSinceJoined / 7));
-    } else {
-      cyclesElapsed = Math.max(1, Math.ceil(daysSinceJoined / 30));
-    }
-
-    const expectedToDate = cyclesElapsed * group.expected_amount;
-    // Amount Owed (Kiasi Unachodaiwa): If member paid less than expected + fines
-    const grossDue = expectedToDate + totalFines;
-    const grossPaid = totalContributed + Math.max(0, totalAdjustments);
-    const amountOwed = Math.max(0, grossDue - grossPaid);
-
-    return {
-      membership,
-      user,
-      totalContributed,
-      totalFines,
-      totalPayouts,
-      totalAdjustments,
-      computedBalance,
-      expectedToDate,
-      amountOwed,
-      lastPaymentDate,
-      entriesCount: entries.length,
-    };
-  }
-
-  public getGroupMemberSummaries(groupId: string): MemberSummary[] {
-    const group = this.getGroupById(groupId);
-    if (!group) return [];
-    const memberships = this.getMembershipsForGroup(groupId);
-    return memberships.map((m) => this.computeMemberSummary(m, group));
   }
 }
 
