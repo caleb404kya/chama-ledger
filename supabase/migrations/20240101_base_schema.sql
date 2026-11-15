@@ -66,6 +66,10 @@ ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can read own profile" ON profiles
   FOR SELECT USING (id = auth.uid());
 
+-- INSERT: Users can insert their own profile (id = auth.uid())
+CREATE POLICY "Users can insert own profile" ON profiles
+  FOR INSERT WITH CHECK (id = auth.uid());
+
 -- Groups: Users can read groups where they have an active membership
 CREATE POLICY "Users can read groups with active membership" ON groups
   FOR SELECT USING (
@@ -116,25 +120,30 @@ CREATE POLICY "Users can insert entries in their groups" ON entries
 -- Trigger: After group INSERT, create creator as admin membership
 CREATE OR REPLACE FUNCTION handle_group_insert()
 RETURNS TRIGGER AS $$
+-- SECURITY DEFINER: Runs with privileges of the user who created the group
+-- Ensures the group creator automatically becomes an admin member
+-- without requiring client-side code to insert the membership
 BEGIN
   INSERT INTO memberships (group_id, user_id, role, status)
   VALUES (NEW.id, NEW.created_by, 'admin', 'active');
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TRIGGER group_insert_trigger
   AFTER INSERT ON groups
   FOR EACH ROW EXECUTE FUNCTION handle_group_insert();
 
 -- Helper function: check if user is group admin or treasurer
--- SECURITY DEFINER avoids recursive lookups on memberships table
+-- SECURITY DEFINER avoids recursive lookups on the memberships table
+-- by using auth.uid() directly instead of scanning memberships for the check
 CREATE OR REPLACE FUNCTION is_group_admin_or_treasurer(group_id UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
   result BOOLEAN;
   current_user_id UUID;
 BEGIN
+  -- Get current user ID from auth directly
   SELECT INTO current_user_id auth.uid();
   
   SELECT INTO result EXISTS (
@@ -149,9 +158,16 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- INSERT: Admins/treasurers can update memberships (approve members, change roles)
+-- WITH CHECK: Only allow setting status to 'active' or 'pending', and role to 'admin', 'treasurer', or 'member'
 CREATE POLICY "Admins/treasurers can update memberships" ON memberships
   FOR UPDATE USING (
     is_group_admin_or_treasurer(group_id)
+  )
+  WITH CHECK (
+    -- Validate status can only be 'pending' or 'active'
+    (status = 'pending' OR status = 'active') AND
+    -- Validate role can only be 'admin', 'treasurer', or 'member'
+    (role = 'admin' OR role = 'treasurer' OR role = 'member')
   );
 
 -- Allow users to read other memberships in their group
@@ -190,6 +206,9 @@ CREATE POLICY "Users can insert entries in their groups" ON entries
 -- Function: get_group_by_join_code(code text) - security definer
 -- Returns only id, name, and join_code for the matching group
 -- Execute permission granted to authenticated role only
+-- First, revoke from PUBLIC to ensure only authenticated users can use it
+REVOKE EXECUTE ON FUNCTION get_group_by_join_code FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION get_group_by_join_code(code text)
 RETURNS TABLE (id UUID, name TEXT, join_code TEXT) AS $$
 BEGIN

@@ -21,9 +21,13 @@ export const MemberApprovalModal: React.FC<Props> = ({
 }) => {
   if (!isOpen) return null;
 
-  const handleApprove = (membershipId: string) => {
-    storage.approveMembership(membershipId);
-    onMemberApproved(membershipId);
+  const handleApprove = async (membershipId: string) => {
+    try {
+      await storage.approveMembership(membershipId);
+      onMemberApproved(membershipId);
+    } catch (err) {
+      console.error('Approval failed:', err);
+    }
   };
 
   return (

@@ -142,3 +142,8 @@ export async function updateUser(userData: { id: string; name: string; phone: st
   const { error } = await supabase.from(TABLES.PROFILES).update({ name: userData.name, phone: userData.phone, language: userData.language }).eq('id', userData.id);
   if (error) throw new Error('Error updating user: ' + error.message);
 }
+
+export async function updateMemberRole(membershipId: string, role: 'admin' | 'treasurer' | 'member'): Promise<void> {
+  const { error } = await supabase.from(TABLES.MEMBERSHIPS).update({ role }).eq('id', membershipId);
+  if (error) throw new Error('Error updating role: ' + error.message);
+}

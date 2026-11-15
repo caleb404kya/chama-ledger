@@ -118,7 +118,14 @@ function App() {
     fetchGroups();
   }, [currentTab]);
 
-  const selectedGroup = groups.find((g) => g.id === selectedGroupId);
+  // Compute safe current user (fallback to default if null)
+  const safeCurrentUser = currentUser || {
+    id: 'user_sarah',
+    name: 'Sarah Wanjiku (Mama Brian)',
+    phone: '0712345678',
+    language: 'en' as const,
+    avatar: '👩🏾‍💼',
+  };
 
   return (
     <div className='min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 flex flex-col transition-colors pb-24 md:pb-12'>
@@ -129,7 +136,7 @@ function App() {
           setCurrentTab(tab);
           setSelectedGroupId(null);
         }}
-        currentUser={currentUser}
+        currentUser={safeCurrentUser}
         language={language}
         isDark={isDark}
         onLanguageChange={(lang) => setLanguage(lang)}
@@ -144,7 +151,7 @@ function App() {
         {currentTab === 'home' && (
           <HomeView
             groups={groups}
-            currentUser={currentUser}
+            currentUser={safeCurrentUser}
             language={language}
             onSelectGroup={handleSelectGroup}
             onOpenCreateGroup={() => setIsCreateGroupOpen(true)}
@@ -152,10 +159,10 @@ function App() {
           />
         )}
 
-        {currentTab === 'group' && selectedGroup && (
+        {currentTab === 'group' && selectedGroupId && groups.find((g) => g.id === selectedGroupId) && (
           <GroupDetailView
-            group={selectedGroup}
-            currentUser={currentUser}
+            group={groups.find((g) => g.id === selectedGroupId)!}
+            currentUser={safeCurrentUser}
             language={language}
             onBack={() => {
               setSelectedGroupId(null);
@@ -167,7 +174,7 @@ function App() {
 
         {currentTab === 'join' && (
           <JoinGroupView
-            currentUser={currentUser}
+            currentUser={safeCurrentUser}
             language={language}
             onJoinSuccess={(grp) => {
               setGroups((prev) => [...prev, grp]);
@@ -180,10 +187,9 @@ function App() {
 
         {currentTab === 'profile' && (
           <ProfileView
-            currentUser={currentUser}
+            currentUser={safeCurrentUser}
             onUserChanged={(u) => {
               setCurrentUser(u);
-              setGroups((prev) => [...prev, u]);
             }}
             language={language}
             onLanguageChange={(lang) => setLanguage(lang)}

@@ -1,4 +1,5 @@
 import { Group, Membership, Entry, User, MemberSummary } from '../types';
+import * as api from './api';
 
 // Demo seed data - only used when VITE_USE_DEMO_DATA === 'true'
 const INITIAL_USERS: User[] = [
@@ -498,6 +499,152 @@ class StorageService {
       localStorage.setItem('chama_force_offline_simulator_v1', JSON.stringify(val));
     }
   }
+
+  // --- Writes to the database (called by the approval and role screens) ---
+
+  public async approveMembership(membershipId: string): Promise<void> {
+    await api.approveMembership(membershipId, this.getCurrentUser().id);
+  }
+
+  public async updateMemberRole(
+    membershipId: string,
+    newRole: 'admin' | 'treasurer' | 'member'
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      await api.updateMemberRole(membershipId, newRole);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Failed to update role.' };
+    }
+  }
+
+  // --- Summaries (restored from the original implementation) ---
+
+  public computeGroupFinancials(groupId: string): {
+    totalBalance: number;
+    totalContributions: number;
+    totalFines: number;
+    totalPayouts: number;
+    totalAdjustments: number;
+    entriesCount: number;
+  } {
+    const entries = this.getEntriesForGroup(groupId);
+    let totalContributions = 0;
+    let totalFines = 0;
+    let totalPayouts = 0;
+    let totalAdjustments = 0;
+
+    for (const entry of entries) {
+      const amt = Number(entry.amount) || 0;
+      switch (entry.type) {
+        case 'contribution':
+          totalContributions += amt;
+          break;
+        case 'fine':
+          totalFines += amt;
+          break;
+        case 'payout':
+          totalPayouts += amt;
+          break;
+        case 'adjustment':
+          totalAdjustments += amt;
+          break;
+      }
+    }
+
+    // Dynamic SUM(entries): Group pot balance = Contributions + Fines + Adjustments - Payouts
+    const totalBalance = totalContributions + totalFines + totalAdjustments - totalPayouts;
+
+    return {
+      totalBalance,
+      totalContributions,
+      totalFines,
+      totalPayouts,
+      totalAdjustments,
+      entriesCount: entries.length,
+    };
+  }
+
+  public computeMemberSummary(membership: Membership, group: Group): MemberSummary {
+    const users = this.getUsers();
+    const user = users.find((u) => u.id === membership.user_id) || {
+      id: membership.user_id,
+      name: 'Unknown User',
+      phone: '',
+      language: 'en' as const,
+    };
+
+    const entries = this.getEntriesForMember(membership.id);
+    let totalContributed = 0;
+    let totalFines = 0;
+    let totalPayouts = 0;
+    let totalAdjustments = 0;
+    let lastPaymentDate: string | undefined;
+
+    for (const e of entries) {
+      const amt = Number(e.amount) || 0;
+      if (!lastPaymentDate && (e.type === 'contribution' || e.type === 'adjustment')) {
+        lastPaymentDate = e.timestamp;
+      }
+      switch (e.type) {
+        case 'contribution':
+          totalContributed += amt;
+          break;
+        case 'fine':
+          totalFines += amt;
+          break;
+        case 'payout':
+          totalPayouts += amt;
+          break;
+        case 'adjustment':
+          totalAdjustments += amt;
+          break;
+      }
+    }
+
+    // Dynamic balance for member: Net member credit = Contributed + Adjustments - Fines - Payouts
+    const computedBalance = totalContributed + totalAdjustments - totalFines - totalPayouts;
+
+    // Estimate expected cycles based on group age / joined date
+    const joinedTime = new Date(membership.joined_at).getTime();
+    const nowTime = Date.now();
+    const daysSinceJoined = Math.max(1, Math.floor((nowTime - joinedTime) / (1000 * 60 * 60 * 24)));
+
+    let cyclesElapsed = 1;
+    if (group.frequency === 'weekly') {
+      cyclesElapsed = Math.max(1, Math.ceil(daysSinceJoined / 7));
+    } else {
+      cyclesElapsed = Math.max(1, Math.ceil(daysSinceJoined / 30));
+    }
+
+    const expectedToDate = cyclesElapsed * group.expected_amount;
+    // Amount Owed (Kiasi Unachodaiwa): If member paid less than expected + fines
+    const grossDue = expectedToDate + totalFines;
+    const grossPaid = totalContributed + Math.max(0, totalAdjustments);
+    const amountOwed = Math.max(0, grossDue - grossPaid);
+
+    return {
+      membership,
+      user,
+      totalContributed,
+      totalFines,
+      totalPayouts,
+      totalAdjustments,
+      computedBalance,
+      expectedToDate,
+      amountOwed,
+      lastPaymentDate,
+      entriesCount: entries.length,
+    };
+  }
+
+  public getGroupMemberSummaries(groupId: string): MemberSummary[] {
+    const group = this.getGroupById(groupId);
+    if (!group) return [];
+    const memberships = this.getMembershipsForGroup(groupId);
+    return memberships.map((m) => this.computeMemberSummary(m, group));
+  }
+
 }
 
 export const storage = new StorageService();

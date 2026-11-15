@@ -41,6 +41,8 @@ export const translations = {
     joinCode: 'Join Code',
     planType: 'Chama Plan',
     activeMembers: 'Active Members',
+    activeMember: 'Active member',
+    chamaName: 'Chama rules',
     pendingApprovals: 'Pending Approvals',
     nextDue: 'Next Due Date',
     
@@ -172,6 +174,8 @@ export const translations = {
     joinCode: 'Msimbo wa Kujiunga',
     planType: 'Aina ya Chama',
     activeMembers: 'Wanachama Hai',
+    activeMember: 'Mwanachama hai',
+    chamaName: 'Kanuni za chama',
     pendingApprovals: 'Wanaosubiri Idhini',
     nextDue: 'Tarehe Ijayo ya Malipo',
     

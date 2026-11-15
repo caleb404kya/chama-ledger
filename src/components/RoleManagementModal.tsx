@@ -26,11 +26,11 @@ export const RoleManagementModal: React.FC<Props> = ({
 
   const activeMembers = members.filter((m) => m.membership.status === 'active');
 
-  const handleRoleChange = (membershipId: string, newRole: Role) => {
+  const handleRoleChange = async (membershipId: string, newRole: Role) => {
     setErrorMessage('');
     setSuccessMessage('');
 
-    const res = storage.updateMemberRole(membershipId, newRole);
+    const res = await storage.updateMemberRole(membershipId, newRole);
     if (!res.success) {
       setErrorMessage(res.error || 'Failed to update role.');
     } else {
