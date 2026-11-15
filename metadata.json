@@ -1,0 +1,6 @@
+{
+  "name": "Chama Ledger",
+  "description": "A lightweight, mobile-first ledger micro-app for Kenyan savings groups (chamas) with offline-first tracking, M-Pesa SMS parsing, and Swahili localization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
