@@ -52,6 +52,7 @@ export interface Entry {
   logged_by: string; // user_id
   timestamp: string;
   sync_status?: 'synced' | 'pending';
+  reversal_of?: string; // UUID of the original entry being adjusted (null for non-adjustment entries)
 }
 
 export interface ParsedMpesa {

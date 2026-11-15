@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Group, Language, User } from './types';
 import { storage } from './services/storage';
+import { supabase } from './services/supabase';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
@@ -10,68 +11,79 @@ import { GroupDetailView } from './components/GroupDetailView';
 import { JoinGroupView } from './components/JoinGroupView';
 import { ProfileView } from './components/ProfileView';
 import { CreateGroupModal } from './components/CreateGroupModal';
+import { SignInScreen } from './components/SignInScreen';
 
-export default function App() {
-  const [currentUser, setCurrentUser] = useState<User>(() => storage.getCurrentUser());
-  const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem('chama_lang_v1');
-    if (saved === 'en' || saved === 'sw') return saved;
-    return 'en';
-  });
-
-  const [isDark, setIsDark] = useState<boolean>(() => {
-    const saved = localStorage.getItem('chama_theme_v1');
-    if (saved) return saved === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
-
+function App() {
+  const [hasInitializedSession, setHasInitializedSession] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [language, setLanguage] = useState<Language>('en');
+  const [isDark, setIsDark] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<'home' | 'join' | 'profile' | 'group'>('home');
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [offlineQueueCount, setOfflineQueueCount] = useState<number>(0);
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
-  const [groups, setGroups] = useState<Group[]>(() => storage.getGroups());
-  const [offlineQueueCount, setOfflineQueueCount] = useState<number>(() => storage.getOfflineQueue().length);
-
   const { isOnline, forcedOffline, toggleSimulateOffline } = useOnlineStatus();
+
+  // Initialize data from storage
+  useEffect(() => {
+    async function initApp() {
+      const user = await storage.getCurrentUser();
+      setCurrentUser(user);
+      setIsSignedIn(!!user);
+
+      const lang = localStorage.getItem('chama_lang_v1');
+      setLanguage(lang === 'en' || lang === 'sw' ? lang : 'en');
+
+      const dark = localStorage.getItem('chama_theme_v1');
+      setIsDark(!!dark);
+
+      const fetchedGroups = await storage.getGroups();
+      setGroups(fetchedGroups);
+
+      const queue = await storage.getOfflineQueue();
+      setOfflineQueueCount(queue.length);
+
+      setHasInitializedSession(true);
+    }
+    initApp();
+  }, []);
 
   // Apply dark class to documentElement
   useEffect(() => {
+    const element = document.documentElement;
     if (isDark) {
-      document.documentElement.classList.add('dark');
+      element.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      element.classList.remove('dark');
     }
-    localStorage.setItem('chama_theme_v1', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  // Persist language
-  const handleLanguageChange = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem('chama_lang_v1', lang);
-    if (currentUser) {
-      const updated = { ...currentUser, language: lang };
-      storage.updateUser(updated);
-      setCurrentUser(updated);
+  // Persist language when it changes
+  useEffect(() => {
+    const saved = localStorage.getItem('chama_lang_v1');
+    if (saved && (saved === 'en' || saved === 'sw')) {
+      setLanguage(saved);
     }
-  };
+  }, []);
 
   // Sync offline queue when connection restores
   useEffect(() => {
-    if (isOnline) {
-      const synced = storage.syncOfflineQueue();
-      if (synced > 0) {
-        setOfflineQueueCount(0);
+    async function syncQueue() {
+      if (isOnline) {
+        await storage.syncOfflineQueue();
       }
+      const queue = await storage.getOfflineQueue();
+      setOfflineQueueCount(queue.length);
     }
-    setOfflineQueueCount(storage.getOfflineQueue().length);
+    syncQueue();
   }, [isOnline]);
 
-  const handleManualSync = () => {
-    const count = storage.syncOfflineQueue();
-    setOfflineQueueCount(storage.getOfflineQueue().length);
-    if (count > 0) {
-      // Refresh groups list
-      setGroups(storage.getGroups());
-    }
+  const handleManualSync = async () => {
+    await storage.syncOfflineQueue();
+    const queue = await storage.getOfflineQueue();
+    setOfflineQueueCount(queue.length);
   };
 
   const handleSelectGroup = (groupId: string) => {
@@ -80,26 +92,36 @@ export default function App() {
   };
 
   const handleGroupCreated = (newGroup: Group) => {
-    setGroups(storage.getGroups());
+    setGroups((prev) => [...prev, newGroup]);
     setSelectedGroupId(newGroup.id);
     setCurrentTab('group');
+    setIsCreateGroupOpen(false);
   };
 
-  const handleResetData = () => {
+  const handleResetData = async () => {
     localStorage.clear();
-    storage.init();
-    const freshUser = storage.getCurrentUser();
-    setCurrentUser(freshUser);
-    setGroups(storage.getGroups());
-    setSelectedGroupId(null);
-    setCurrentTab('home');
-    setOfflineQueueCount(0);
+    window.location.reload();
   };
+
+  const handleSignIn = async (user: User) => {
+    setCurrentUser(user);
+    setIsSignedIn(true);
+    await storage.setCurrentUser(user.id);
+  };
+
+  // When user changes tab, fetch groups fresh
+  useEffect(() => {
+    async function fetchGroups() {
+      const fetchedGroups = await storage.getGroups();
+      setGroups(fetchedGroups);
+    }
+    fetchGroups();
+  }, [currentTab]);
 
   const selectedGroup = groups.find((g) => g.id === selectedGroupId);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors pb-24 md:pb-12">
+    <div className='min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 flex flex-col transition-colors pb-24 md:pb-12'>
       {/* Universal Top Bar */}
       <Header
         currentTab={currentTab}
@@ -109,8 +131,8 @@ export default function App() {
         }}
         currentUser={currentUser}
         language={language}
-        onLanguageChange={handleLanguageChange}
         isDark={isDark}
+        onLanguageChange={(lang) => setLanguage(lang)}
         onToggleTheme={() => setIsDark((prev) => !prev)}
         isOnline={isOnline}
         onToggleSimulateOffline={toggleSimulateOffline}
@@ -118,7 +140,7 @@ export default function App() {
       />
 
       {/* Main View Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6">
+      <main className='flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6'>
         {currentTab === 'home' && (
           <HomeView
             groups={groups}
@@ -148,10 +170,9 @@ export default function App() {
             currentUser={currentUser}
             language={language}
             onJoinSuccess={(grp) => {
-              setGroups(storage.getGroups());
+              setGroups((prev) => [...prev, grp]);
             }}
             onNavigateHome={() => {
-              setGroups(storage.getGroups());
               setCurrentTab('home');
             }}
           />
@@ -162,10 +183,10 @@ export default function App() {
             currentUser={currentUser}
             onUserChanged={(u) => {
               setCurrentUser(u);
-              setGroups(storage.getGroups());
+              setGroups((prev) => [...prev, u]);
             }}
             language={language}
-            onLanguageChange={handleLanguageChange}
+            onLanguageChange={(lang) => setLanguage(lang)}
             isDark={isDark}
             onToggleTheme={() => setIsDark((prev) => !prev)}
             isOnline={isOnline}
@@ -203,3 +224,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
