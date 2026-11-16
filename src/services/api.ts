@@ -132,6 +132,12 @@ export async function getMembership(userId: string, groupId: string): Promise<Me
   return data as Membership;
 }
 
+export async function getActiveMemberships(userId: string): Promise<Membership[]> {
+  const { data, error } = await supabase.from(TABLES.MEMBERSHIPS).select('*').eq('user_id', userId).eq('status', 'active');
+  if (error) { console.error('Error fetching active memberships:', error); return []; }
+  return data as Membership[];
+}
+
 export async function approveMembership(membershipId: string, approverId: string): Promise<Membership> {
   const { data, error } = await supabase.from(TABLES.MEMBERSHIPS).update({ status: 'active', approved_by: approverId }).eq('id', membershipId).select().single();
   if (error) throw new Error('Error approving membership: ' + error.message);

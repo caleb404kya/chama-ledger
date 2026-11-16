@@ -1,12 +1,7 @@
 import React from 'react';
 import { supabase } from '../services/supabase';
 
-interface Props {
-  supabase: any;
-  onSignIn: (user: any) => void;
-}
-
-export const SignInScreen: React.FC<Props> = ({ supabase, onSignIn }) => {
+export const SignInScreen: React.FC = () => {
   const [mode, setMode] = React.useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -62,9 +57,8 @@ export const SignInScreen: React.FC<Props> = ({ supabase, onSignIn }) => {
           } else {
             setError(error.message || 'Failed to sign in');
           }
-        } else {
-          onSignIn(data.user);
         }
+        // No onSignIn callback needed - App.tsx auth listener will handle state change
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -81,9 +75,8 @@ export const SignInScreen: React.FC<Props> = ({ supabase, onSignIn }) => {
           } else {
             setError(error.message || 'Failed to create account');
           }
-        } else {
-          onSignIn(data.user);
         }
+        // No onSignIn callback needed - App.tsx auth listener will handle state change
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred');

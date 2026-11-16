@@ -34,7 +34,7 @@ export const PWAInstallButton: React.FC<Props> = ({ language, variant = 'header'
     }
 
     return (
-      <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center justify-between gap-4">
+      <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl max-h-[90vh] overflow-y-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
             <Smartphone className="w-5 h-5" />

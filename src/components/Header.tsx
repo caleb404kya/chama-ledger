@@ -29,13 +29,15 @@ export const Header: React.FC<Props> = ({
   onToggleSimulateOffline,
   forcedOffline,
 }) => {
+  const isNarrowScreen = typeof window !== 'undefined' && window.innerWidth < 400;
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors max-w-360">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
         {/* Zone 1: Brand Wordmark */}
         <button
           onClick={() => onNavigate('home')}
-          className="flex items-center gap-2.5 text-left text-emerald-600 dark:text-emerald-400 font-bold text-lg tracking-tight whitespace-nowrap shrink-0 hover:opacity-90 transition"
+          className="flex items-center gap-2.5 text-left text-emerald-600 dark:text-emerald-400 font-bold text-lg tracking-tight whitespace-normal shrink-0 hover:opacity-90 transition"
         >
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-sm font-black text-sm">
             CL
@@ -47,7 +49,7 @@ export const Header: React.FC<Props> = ({
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
           <button
             onClick={() => onNavigate('home')}
-            className={`whitespace-nowrap transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
+            className={`whitespace-normal transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
               currentTab === 'home' || currentTab === 'group'
                 ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
                 : ''
@@ -57,7 +59,7 @@ export const Header: React.FC<Props> = ({
           </button>
           <button
             onClick={() => onNavigate('join')}
-            className={`whitespace-nowrap transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
+            className={`whitespace-normal transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
               currentTab === 'join' ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : ''
             }`}
           >
@@ -65,7 +67,7 @@ export const Header: React.FC<Props> = ({
           </button>
           <button
             onClick={() => onNavigate('profile')}
-            className={`whitespace-nowrap transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
+            className={`whitespace-normal transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 ${
               currentTab === 'profile' ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : ''
             }`}
           >
@@ -99,7 +101,7 @@ export const Header: React.FC<Props> = ({
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-xs font-semibold">
             <button
               onClick={() => onLanguageChange('en')}
-              className={`px-2 py-1 rounded-md transition ${
+              className={`px-3 py-2 rounded-lg transition ${
                 language === 'en'
                   ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800'
@@ -109,7 +111,7 @@ export const Header: React.FC<Props> = ({
             </button>
             <button
               onClick={() => onLanguageChange('sw')}
-              className={`px-2 py-1 rounded-md transition ${
+              className={`px-3 py-2 rounded-lg transition ${
                 language === 'sw'
                   ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800'
